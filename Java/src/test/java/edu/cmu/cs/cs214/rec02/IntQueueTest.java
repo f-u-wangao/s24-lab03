@@ -83,6 +83,9 @@ public class IntQueueTest {
 
     @Test
     public void testDequeue() {
+        // Ensure that dequeueing an empty queue returns null
+        assertNull(mQueue.dequeue());
+
         for (int i = 0; i < testList.size(); i++) {
             mQueue.enqueue(testList.get(i));
         }
@@ -94,8 +97,46 @@ public class IntQueueTest {
     }
 
     @Test
+    public void testClear() {
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.enqueue(testList.get(i));
+        }
+        mQueue.clear();
+        assertTrue(mQueue.isEmpty());
+    }
+
+    @Test
     public void testContent() throws IOException {
         // This is an example unit test
+        InputStream in = new FileInputStream("src/test/resources/data.txt");
+        try (Scanner scanner = new Scanner(in)) {
+            scanner.useDelimiter("\\s*fish\\s*");
+
+            List<Integer> correctResult = new ArrayList<>();
+            while (scanner.hasNextInt()) {
+                int input = scanner.nextInt();
+                correctResult.add(input);
+                System.out.println("enqueue: " + input);
+                mQueue.enqueue(input);
+            }
+
+            for (Integer result : correctResult) {
+                assertEquals(mQueue.dequeue(), result);
+            }
+        }
+    }
+
+    @Test
+    public void testCombined() throws IOException {
+        // Enqueue and dequeue to move head forward
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.enqueue(testList.get(i));
+        }
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.dequeue();
+        }
+
+        // Test if ensureCapacity() still works
         InputStream in = new FileInputStream("src/test/resources/data.txt");
         try (Scanner scanner = new Scanner(in)) {
             scanner.useDelimiter("\\s*fish\\s*");
